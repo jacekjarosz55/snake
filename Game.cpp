@@ -39,24 +39,32 @@ Game::Game() {
 
 
   // game loop
+  // could be split into a separate method
   ALLEGRO_EVENT event;
   al_start_timer(_timer);
   bool needsDraw = false; 
-  while (1) {
+  bool exit = false; 
+  while (true) {
     al_wait_for_event(_queue, &event);
 
-    if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-      break;
+    switch(event.type) {
+      case ALLEGRO_EVENT_DISPLAY_CLOSE:
+        exit=true;
+        break;
+      case ALLEGRO_EVENT_TIMER:
+        needsDraw = true;
+        break;
     }
 
-    if (event.type == ALLEGRO_EVENT_TIMER) {
-      needsDraw = true;
+    if(exit) {
+      break;
     }
 
     if (needsDraw && al_is_event_queue_empty(_queue)) {
       draw();
       needsDraw = false;
     }
+
   }
 }
 
