@@ -13,10 +13,10 @@
 class Game {
 private:
 
-  const unsigned WINDOW_SCALE = 2;
+  const unsigned WINDOW_SCALE = 1;
   const unsigned TILE_SIZE = 32;
   const unsigned TILES_X = 20;
-  const unsigned TILES_Y = 10;
+  const unsigned TILES_Y = 20;
   const unsigned BUFFER_W = TILE_SIZE * TILES_X;
   const unsigned BUFFER_H = TILE_SIZE * TILES_Y;
 

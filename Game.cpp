@@ -34,7 +34,6 @@ Game::Game() {
   }
   
   gameBuffer = al_create_bitmap(BUFFER_W, BUFFER_H);
-
   display = al_create_display(BUFFER_W*WINDOW_SCALE, BUFFER_H*WINDOW_SCALE);
   if (!display) {
     throw InitializationException("display");
@@ -97,8 +96,11 @@ void Game::update() {
   frameCounter++;
   // TODO: replace '4' with snake speed
   if (frameCounter % 4 == 0) {
+
     snake->step();
-    if (snake->hasCollidedWithSelf()) {
+    auto head = snake->getHead();
+    if (snake->hasCollidedWithSelf() || 
+      head.x < 0 || head.x >= TILES_X || head.y < 0 || head.y >= TILES_Y) {
       exit = true;
     }
 

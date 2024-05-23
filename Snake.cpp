@@ -104,6 +104,10 @@ std::deque<Position> Snake::getBody() const {
   return _body;
 }
 
+Position Snake::getHead() {
+  return _body.back();
+}
+
 void Snake::addLength(unsigned len) {
   _resize+=len;
 }

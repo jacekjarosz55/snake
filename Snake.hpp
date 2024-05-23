@@ -30,8 +30,8 @@ public:
   static SnakeMove getMove(SnakeDirection direction);
   static SnakeDirection oppositeDirection(SnakeDirection direction);
 
+  Position getHead();
   void step(); 
-
   bool isInside(Position pos);
   bool hasCollidedWith(Position pos);
   bool hasCollidedWithSelf();
