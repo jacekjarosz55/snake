@@ -223,14 +223,12 @@ void Game::drawSnake() {
     bool isTurn = !(prevPart.x == nextPart.x || prevPart.y == nextPart.y);
     if (isTurn) {
       angle = 0;
-      // TODO: this doesn't work :(
-      if (nextPart.y < prevPart.y)  {
-        // going up
-        angle = (nextPart.x > prevPart.x) ? 1.5*PI : 0.5*PI;
-      } else {
-        // going down
-        angle = (nextPart.x > prevPart.x) ? PI : 0*PI;
-      }
+      // counter clockwise wheel
+      if (nextPart.x > part.x && nextPart.y > part.y) {
+        // up left
+      } // TODO: https://youtu.be/TBGEt_-rFSs
+
+
     } else { // not isTurn
       if (nextPart.y == prevPart.y)  {
         angle = 0;
