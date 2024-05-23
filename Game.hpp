@@ -47,6 +47,5 @@ private:
 public:
   Game();
   ~Game();
-
 };
 

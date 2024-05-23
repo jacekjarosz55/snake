@@ -156,49 +156,98 @@ void Game::draw() {
   al_flip_display();
 }
 
+
 void Game::drawSnake() {
+  const unsigned SNAKE_HEAD_SPRITE = 0;
+  const unsigned SNAKE_BODY_SPRITE = 1;
+  const unsigned SNAKE_TURN_SPRITE = 2;
+  const unsigned SNAKE_TAIL_SPRITE = 6;
   const float PI = 3.14;
-  float halfsize = (float)TILE_SIZE/2;
-  float turn = 0;
+  float halfsize = (float)TILE_SIZE / 2;
+  float angle = 0;
+
+
+  // draw head
+  auto snakeBody = snake->getBody();
+  auto head = snakeBody.back();
   switch(snake->getDirection()) {
   case SNAKE_LEFT:
-    turn = 0 * PI;
+    angle = 0 * PI;
     break;
   case SNAKE_RIGHT:
-    turn = 1 * PI;
+    angle = 1 * PI;
     break;
   case SNAKE_UP:
-    turn = 0.5 * PI;
+    angle = 0.5 * PI;
     break;
   case SNAKE_DOWN:
-    turn = 1.5 * PI;
+    angle = 1.5 * PI;
     break;
   }
 
-  auto snakeBody = snake->getBody();
-  auto head = snakeBody.back();
-  // draw head
   al_draw_rotated_bitmap(
     spritesheet->get(0),
     halfsize, halfsize,
     head.x*TILE_SIZE + halfsize,
     head.y*TILE_SIZE + halfsize,
-    turn,
+    angle,
     0);
+
+
+  // draw tail
+  int dx, dy = 0;
+  Position tail = snakeBody[0];
+  Position tailNext = snakeBody[1];
+  dx = tailNext.x - tail.x;
+  dy = tailNext.y - tail.y;
+  if (dx > 0)  { angle = PI * 0.5; }
+  if (dx < 0)  { angle = PI * 1.5; }
+  if (dy > 0)  { angle = PI; }
+  if (dy < 0)  { angle = 0 * PI;  }
+  
+
+  al_draw_rotated_bitmap(
+    spritesheet->get(SNAKE_TAIL_SPRITE),
+    halfsize, halfsize,
+    tail.x*TILE_SIZE + halfsize,
+    tail.y*TILE_SIZE + halfsize,
+    angle,
+    0);
+
   // draw the rest
-  for (int i = 0; i < snakeBody.size() - 1; i++) {
-    auto snakePart = snakeBody[i];
-    al_draw_bitmap(spritesheet->get(1), snakePart.x*TILE_SIZE, snakePart.y*TILE_SIZE, 0);
+  for (int i = 1; i < snakeBody.size() - 1; i++) {
+    // TODO: check previous and next element to determine which tile to draw
+    auto part = snakeBody[i];
+    auto prevPart = snakeBody[i-1];
+    auto nextPart = snakeBody[i+1];
+    bool isTurn = !(prevPart.x == nextPart.x || prevPart.y == nextPart.y);
+    if (isTurn) {
+      angle = 0;
+      // TODO
+    } else { // not isTurn
+      if (prevPart.y == nextPart.y)  {
+        angle = 0;
+      }
+      else {
+        angle = 0.5*PI;
+      }
+    }
+    al_draw_rotated_bitmap(
+      spritesheet->get(isTurn ? SNAKE_TURN_SPRITE : SNAKE_BODY_SPRITE),
+      halfsize,
+      halfsize,
+      part.x*TILE_SIZE+halfsize,
+      part.y*TILE_SIZE+halfsize,
+      angle,
+      0);
   }
 }
-
 
 void Game::drawFruits() {
   for (auto fruit : fruits) {
     al_draw_bitmap(spritesheet->get(4), fruit.x*TILE_SIZE, fruit.y*TILE_SIZE, 0);
   }
 }
-
 
 void Game::spawnFruit() {
   Position fruit;
