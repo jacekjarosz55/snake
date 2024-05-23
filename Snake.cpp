@@ -80,10 +80,8 @@ void Snake::step() {
 }
 
 bool Snake::collidesWith(Position pos) {
-  for (auto part : _body) {
-    if (part.x == pos.x && part.y == pos.y) return true;
-  }
-  return false;
+  auto head = _body.back();
+  return (head.x == pos.x && head.y == pos.y);
 }
 
 bool Snake::hasCollidedWithSelf() {
@@ -98,4 +96,9 @@ bool Snake::hasCollidedWithSelf() {
 std::deque<Position> Snake::getBody() const {
   return _body;
 }
+
+void Snake::addLength(unsigned len) {
+  _resize+=len;
+}
+
 

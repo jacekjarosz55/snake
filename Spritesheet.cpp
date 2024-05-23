@@ -5,16 +5,16 @@
 #include <allegro5/bitmap_io.h>
 #include <string>
 
-Spritesheet::Spritesheet(const char *filename) {
+Spritesheet::Spritesheet(const char *filename, unsigned res): _res(res) {
   _source = al_load_bitmap(filename);
   if (!_source) {
     throw InitializationException("spritesheet image");
   }
-  _spritesX = al_get_bitmap_width(_source) / SPRITESHEET_RES;
-  _spritesY = al_get_bitmap_height(_source) / SPRITESHEET_RES;
+  _spritesX = al_get_bitmap_width(_source) / _res;
+  _spritesY = al_get_bitmap_height(_source) / _res;
   for (int y = 0; y <  _spritesY; y++) {
     for (int x = 0; x <  _spritesX; x++) {
-      ALLEGRO_BITMAP *spriteBitmap = al_create_sub_bitmap(_source, x*SPRITESHEET_RES, y*SPRITESHEET_RES, SPRITESHEET_RES, SPRITESHEET_RES);
+      ALLEGRO_BITMAP *spriteBitmap = al_create_sub_bitmap(_source, x*_res, y*_res, _res, _res);
       if (!spriteBitmap) {
         throw InitializationException("spritesheet slice");
       }

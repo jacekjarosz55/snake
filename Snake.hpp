@@ -34,6 +34,7 @@ public:
 
   bool collidesWith(Position pos);
   bool hasCollidedWithSelf();
+  void addLength(unsigned len);
 
   void turn(SnakeDirection direction);
 

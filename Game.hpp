@@ -5,35 +5,46 @@
 #include <allegro5/events.h>
 #include <allegro5/timer.h>
 #include <allegro5/allegro_image.h>
+#include <vector>
 
 #include "Snake.hpp"
 #include "Spritesheet.hpp"
 
 class Game {
 private:
-  ALLEGRO_TIMER *_timer;
-  ALLEGRO_EVENT_QUEUE *_queue;
-  ALLEGRO_DISPLAY *_display;
-  ALLEGRO_FONT *_font;
 
-  ALLEGRO_BITMAP *_gameBuffer;
-
-  Spritesheet *_spritesheet;
-
-  unsigned _frameCounter = 0;
-
-  Snake snake = Snake(10,10,20, SNAKE_DOWN);
-
-  const unsigned BUFFER_W = 400;
-  const unsigned BUFFER_H = 300;
   const unsigned WINDOW_SCALE = 2;
+  const unsigned TILE_SIZE = 32;
+  const unsigned TILES_X = 20;
+  const unsigned TILES_Y = 10;
+  const unsigned BUFFER_W = TILE_SIZE * TILES_X;
+  const unsigned BUFFER_H = TILE_SIZE * TILES_Y;
 
-  bool _needsRedraw = false;
-  bool _exit = false;
+  ALLEGRO_TIMER *timer;
+  ALLEGRO_EVENT_QUEUE *eventQueue;
+  ALLEGRO_DISPLAY *display;
+  ALLEGRO_FONT *font;
+
+  ALLEGRO_BITMAP *gameBuffer;
+
+  Spritesheet *spritesheet;
+
+  unsigned frameCounter = 0;
+
+  Snake *snake;
+
+
+  bool needsRedraw = false;
+  bool exit = false;
+
+  std::vector<Position> fruits;
   
-  void draw();
   void update();
   void onKeyDown(ALLEGRO_KEYBOARD_EVENT event);
+  void spawnFruit();
+  void draw();
+  void drawSnake();
+  void drawFruits();
 public:
   Game();
   ~Game();

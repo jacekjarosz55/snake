@@ -4,6 +4,7 @@
 #include <allegro5/bitmap.h>
 #include <allegro5/bitmap_draw.h>
 #include <allegro5/bitmap_io.h>
+#include <cstdlib>
 #include <unistd.h>
 
 #include "Game.hpp"
@@ -22,122 +23,178 @@ Game::Game() {
     throw InitializationException("image addon");
   }
 
-  _timer = al_create_timer(1.0 / 30.0); // 30fps
-  if (!_timer) {
+  timer = al_create_timer(1.0 / 30.0); // 30fps
+  if (!timer) {
     throw InitializationException("timer");
   }
 
-  _queue = al_create_event_queue();
-  if (!_queue) {
+  eventQueue = al_create_event_queue();
+  if (!eventQueue) {
     throw InitializationException("event queue");
   }
   
-  _gameBuffer = al_create_bitmap(BUFFER_W, BUFFER_H);
+  gameBuffer = al_create_bitmap(BUFFER_W, BUFFER_H);
 
-  _display = al_create_display(BUFFER_W*WINDOW_SCALE, BUFFER_H*WINDOW_SCALE);
-  if (!_display) {
+  display = al_create_display(BUFFER_W*WINDOW_SCALE, BUFFER_H*WINDOW_SCALE);
+  if (!display) {
     throw InitializationException("display");
   }
 
-  _font = al_create_builtin_font();
-  if (!_font) {
+  font = al_create_builtin_font();
+  if (!font) {
     throw InitializationException("font");
   }
 
-  _spritesheet = new Spritesheet("spritesheet.png");
+  spritesheet = new Spritesheet("spritesheet.png", 32);
 
   // listen to keyboard events
-  al_register_event_source(_queue, al_get_keyboard_event_source());
-  al_register_event_source(_queue, al_get_display_event_source(_display));
-  al_register_event_source(_queue, al_get_timer_event_source(_timer));
+  al_register_event_source(eventQueue, al_get_keyboard_event_source());
+  al_register_event_source(eventQueue, al_get_display_event_source(display));
+  al_register_event_source(eventQueue, al_get_timer_event_source(timer));
+
+
+
+  // initialize game;
+
+  snake = new Snake(0,0,5, SNAKE_DOWN);
+  spawnFruit();
 
   // game loop
   // could be split into a separate method
   ALLEGRO_EVENT event;
-  al_start_timer(_timer);
-  _needsRedraw = false; 
-  _exit = false; 
+  al_start_timer(timer);
+  needsRedraw = false; 
+  exit = false; 
   while (true) {
-    al_wait_for_event(_queue, &event);
+    al_wait_for_event(eventQueue, &event);
 
     switch(event.type) {
       case ALLEGRO_EVENT_KEY_DOWN:
         onKeyDown(event.keyboard);
         break;
       case ALLEGRO_EVENT_DISPLAY_CLOSE:
-        _exit = true;
+        exit = true;
         break;
       case ALLEGRO_EVENT_TIMER:
         update();
-        _needsRedraw = true;
+        needsRedraw = true;
         break;
     }
 
-    if(_exit) {
+    if(exit) {
       break;
     }
 
-    if (_needsRedraw && al_is_event_queue_empty(_queue)) {
+    if (needsRedraw && al_is_event_queue_empty(eventQueue)) {
       draw();
-      _needsRedraw = false;
+      needsRedraw = false;
     }
 
   }
 }
 
 void Game::update() {
-  _frameCounter++;
+  frameCounter++;
   // TODO: replace '4' with snake speed
-  if (_frameCounter % 4 == 0) {
-    snake.step();
-    if (snake.hasCollidedWithSelf()) {
-      _exit = true;
+  if (frameCounter % 4 == 0) {
+    snake->step();
+    if (snake->hasCollidedWithSelf()) {
+      exit = true;
     }
+
+    for (auto fruitIt = fruits.begin(); fruitIt != fruits.end();) {
+      if(snake->collidesWith(*fruitIt)) {
+        fruits.erase(fruitIt);
+        snake->addLength(1);
+        spawnFruit();
+      } else {
+        ++fruitIt;
+      }
+    }
+
   }
 }
 
 // kinda weird but this is the only input we need so
 void Game::onKeyDown(ALLEGRO_KEYBOARD_EVENT event) {
   if (event.keycode == ALLEGRO_KEY_ESCAPE) {
-    _exit = true;
+    exit = true;
   }
 
   if (event.keycode == ALLEGRO_KEY_LEFT) {
-    snake.turn(SNAKE_LEFT);
+    snake->turn(SNAKE_LEFT);
   }
   if (event.keycode == ALLEGRO_KEY_RIGHT) {
-    snake.turn(SNAKE_RIGHT);
+    snake->turn(SNAKE_RIGHT);
   }
   if (event.keycode == ALLEGRO_KEY_UP) {
-    snake.turn(SNAKE_UP);
+    snake->turn(SNAKE_UP);
   }
   if (event.keycode == ALLEGRO_KEY_DOWN) {
-    snake.turn(SNAKE_DOWN);
+    snake->turn(SNAKE_DOWN);
   }
 }
+
+
 
 void Game::draw() {
   // draw on the game buffer
-  al_set_target_bitmap(_gameBuffer); 
+  al_set_target_bitmap(gameBuffer); 
   al_clear_to_color(al_map_rgb(0,0,0));
 
-  for (auto snakePart : snake.getBody()) {
-    al_draw_pixel(snakePart.x, snakePart.y, al_map_rgb(0,255,0));
-  }
+  drawFruits();
+  drawSnake();
+  
 
-  al_draw_bitmap(_spritesheet->get(_frameCounter % _spritesheet->size()), 16,16, 0);
+
 
   // draw the buffer onto the window
-  al_set_target_backbuffer(_display); 
-  al_draw_scaled_bitmap(_gameBuffer, 0, 0, BUFFER_W, BUFFER_H, 0, 0, BUFFER_W * WINDOW_SCALE, BUFFER_H * WINDOW_SCALE, 0);
+  al_set_target_backbuffer(display); 
+  al_draw_scaled_bitmap(gameBuffer, 0, 0, BUFFER_W, BUFFER_H, 0, 0, BUFFER_W * WINDOW_SCALE, BUFFER_H * WINDOW_SCALE, 0);
   al_flip_display();
 }
 
+void Game::drawSnake() {
+  auto snakeBody = snake->getBody();
+  auto head = snakeBody.back();
+  // draw head
+  al_draw_bitmap(
+    spritesheet->get(0),
+    head.x*TILE_SIZE,
+    head.y*TILE_SIZE,
+    0);
+  // draw the rest
+  for (int i = 0; i < snakeBody.size() - 1; i++) {
+    auto snakePart = snakeBody[i];
+    al_draw_bitmap(spritesheet->get(1), snakePart.x*TILE_SIZE, snakePart.y*TILE_SIZE, 0);
+  }
+}
+
+
+void Game::drawFruits() {
+  for (auto fruit : fruits) {
+    al_draw_bitmap(spritesheet->get(4), fruit.x*TILE_SIZE, fruit.y*TILE_SIZE, 0);
+  }
+}
+
+
+
+
+
+void Game::spawnFruit() {
+  Position fruit;
+  fruit.x = rand()%TILES_X;
+  fruit.y = rand()%TILES_Y;
+  fruits.push_back(fruit);
+}
+
+
 Game::~Game() {
-  delete _spritesheet;
-  al_destroy_font(_font);
-  al_destroy_bitmap(_gameBuffer);
-  al_destroy_display(_display);
-  al_destroy_timer(_timer);
-  al_destroy_event_queue(_queue);
+  delete spritesheet;
+  delete snake;
+  al_destroy_font(font);
+  al_destroy_bitmap(gameBuffer);
+  al_destroy_display(display);
+  al_destroy_timer(timer);
+  al_destroy_event_queue(eventQueue);
 }
