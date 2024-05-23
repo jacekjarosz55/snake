@@ -5,7 +5,7 @@
 #include <allegro5/bitmap_draw.h>
 #include <allegro5/bitmap_io.h>
 #include <cstdlib>
-#include <unistd.h>
+#include <iostream>
 
 #include "Game.hpp"
 #include "InitializationException.hpp"
@@ -147,9 +147,6 @@ void Game::draw() {
   drawFruits();
   drawSnake();
   
-
-
-
   // draw the buffer onto the window
   al_set_target_backbuffer(display); 
   al_draw_scaled_bitmap(gameBuffer, 0, 0, BUFFER_W, BUFFER_H, 0, 0, BUFFER_W * WINDOW_SCALE, BUFFER_H * WINDOW_SCALE, 0);
@@ -217,17 +214,13 @@ void Game::drawSnake() {
   // draw the rest
   for (int i = 1; i < snakeBody.size() - 1; i++) {
     // TODO: check previous and next element to determine which tile to draw
-    auto part = snakeBody[i];
     auto prevPart = snakeBody[i-1];
+    auto part = snakeBody[i];
     auto nextPart = snakeBody[i+1];
-    bool isTurn = !(prevPart.x == nextPart.x || prevPart.y == nextPart.y);
-    if (isTurn) {
-      angle = 0;
-      // counter clockwise wheel
-      if (nextPart.x > part.x && nextPart.y > part.y) {
-        // up left
-      } // TODO: https://youtu.be/TBGEt_-rFSs
 
+    bool isTurn = !(prevPart.x == nextPart.x || prevPart.y == nextPart.y);
+
+    if (isTurn) {
 
     } else { // not isTurn
       if (nextPart.y == prevPart.y)  {
@@ -237,6 +230,8 @@ void Game::drawSnake() {
         angle = 0.5*PI;
       }
     }
+
+    std::cout << "drawing angle " << angle << "\n";
     al_draw_rotated_bitmap(
       spritesheet->get(isTurn ? SNAKE_TURN_SPRITE : SNAKE_BODY_SPRITE),
       halfsize,
