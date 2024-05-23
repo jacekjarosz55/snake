@@ -19,8 +19,8 @@ SnakeDirection Snake::oppositeDirection(SnakeDirection direction) {
       return SNAKE_RIGHT;
     case SNAKE_RIGHT:
       return SNAKE_LEFT;
-    return SNAKE_DOWN;
   }
+  return SNAKE_DOWN;
 }
 
 SnakeMove Snake::getMove(SnakeDirection direction) {
