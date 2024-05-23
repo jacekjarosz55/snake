@@ -2,7 +2,10 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/display.h>
 #include <allegro5/events.h>
+#include <allegro5/keyboard.h>
+#include <allegro5/keycodes.h>
 #include <allegro5/timer.h>
+#include <iostream>
 
 #include "Game.hpp"
 #include "InitializationException.hpp"
@@ -42,30 +45,40 @@ Game::Game() {
   // could be split into a separate method
   ALLEGRO_EVENT event;
   al_start_timer(_timer);
-  bool needsDraw = false; 
-  bool exit = false; 
+  _needsRedraw = false; 
+  _exit = false; 
   while (true) {
     al_wait_for_event(_queue, &event);
 
     switch(event.type) {
+      case ALLEGRO_EVENT_KEY_DOWN:
+        onKeyDown(event.keyboard);
+        break;
       case ALLEGRO_EVENT_DISPLAY_CLOSE:
-        exit=true;
+        _exit = true;
         break;
       case ALLEGRO_EVENT_TIMER:
-        needsDraw = true;
+        _needsRedraw = true;
         break;
     }
 
-    if(exit) {
+    if(_exit) {
       break;
     }
 
-    if (needsDraw && al_is_event_queue_empty(_queue)) {
+    if (_needsRedraw && al_is_event_queue_empty(_queue)) {
       draw();
-      needsDraw = false;
+      _needsRedraw = false;
     }
 
   }
+}
+
+void Game::onKeyDown(ALLEGRO_KEYBOARD_EVENT event) {
+  if (event.keycode == ALLEGRO_KEY_ESCAPE) {
+    _exit = true;
+  }
+
 }
 
 void Game::draw() {
