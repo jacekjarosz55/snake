@@ -1,9 +1,9 @@
+#pragma once
+
+#include "Util.hpp"
+#include <deque>
 #include <queue>
 
-struct SnakePart {
-  int x = 0;
-  int y = 0;
-};
 
 struct SnakeMove {
   int dx = 0;
@@ -11,24 +11,32 @@ struct SnakeMove {
 };
 
 enum SnakeDirection {
-  LEFT,
-  RIGHT,
-  UP,
-  DOWN
+  SNAKE_LEFT = 0,
+  SNAKE_RIGHT = 1,
+  SNAKE_UP = 2,
+  SNAKE_DOWN = 3
 };
+
+
 
 class Snake {
 private:
   unsigned _resize = 0;
-  std::queue<SnakePart> _body;
+  std::deque<Position> _body;
   std::queue<SnakeDirection> _moves;
   SnakeDirection _direction;
-  SnakePart *getHead();
-  SnakePart *getTail();
+  Position *getHead();
 public: 
-  Snake(int x, int y, int resize);
+  Snake(int x, int y, int resize, SnakeDirection direction);
   static SnakeMove getMove(SnakeDirection direction);
-  void step();
+  static SnakeDirection oppositeDirection(SnakeDirection direction);
+
+  void step(); 
+
+  bool collidesWith(Position pos);
+  bool collidedWithSelf();
+
   void turn(SnakeDirection direction);
-  std::queue<SnakePart> getBody() const;
+
+  std::deque<Position> getBody() const;
 };

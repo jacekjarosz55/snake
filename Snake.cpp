@@ -1,27 +1,68 @@
 #include "Snake.hpp"
+#include "Util.hpp"
+#include <deque>
 
-Snake::Snake(int x, int y, int resize) {
-  _body.push({x,y});
+
+Snake::Snake(int x, int y, int resize, SnakeDirection direction) {
+  _body.push_back({x,y});
   _resize = resize;
+  _direction = direction;
 }
 
+SnakeDirection Snake::oppositeDirection(SnakeDirection direction) {
+  switch (direction) {
+    case SNAKE_UP:
+      return SNAKE_DOWN;
+    case SNAKE_DOWN:
+      return SNAKE_UP;
+    case SNAKE_LEFT:
+      return SNAKE_RIGHT;
+    case SNAKE_RIGHT:
+      return SNAKE_LEFT;
+    return SNAKE_DOWN;
+  }
+}
 
-SnakePart *Snake::getHead() {
+SnakeMove Snake::getMove(SnakeDirection direction) {
+  SnakeMove move;
+  move.dx=0;
+  move.dy=0;
+
+  switch (direction) {
+    case SNAKE_UP:
+      move.dy = -1;
+      break;
+    case SNAKE_DOWN:
+      move.dy = 1;
+      break;
+    case SNAKE_LEFT:
+      move.dx = -1;
+      break;
+    case SNAKE_RIGHT:
+      move.dx = 1;
+      break;
+  }
+
+  return move;
+}
+
+Position *Snake::getHead() {
   return &_body.back();
 }
 
 void Snake::turn(SnakeDirection direction) {
   if (
-    (_moves.size() == 0 && direction == _direction) 
-    || (_moves.back() == direction)) {
+    ( _moves.size() == 0 && (direction == _direction || direction == oppositeDirection(_direction))
+    || (_moves.size() > 0 && _moves.back() == direction))
+  ) {
     return;
   }
   _moves.push(direction);
 }
 
 void Snake::step() {
-  SnakePart *head = getHead();
-  SnakePart newHead;
+  Position *head = getHead();
+  Position newHead;
 
   if (_moves.size() > 0) {
     _direction = _moves.front();
@@ -33,16 +74,31 @@ void Snake::step() {
   newHead.x = head->x + move.dx;
   newHead.y = head->y + move.dy;
 
-  // TODO: check colision 
-  _body.push(newHead);
+  _body.push_back(newHead);
   if (_resize > 0) {
     _resize--;
   } else {
-    _body.pop();
+    _body.pop_front();
   }
 }
 
-std::queue<SnakePart> Snake::getBody() const {
+bool Snake::collidesWith(Position pos) {
+  for (auto part : _body) {
+    if (part.x == pos.x && part.y == pos.y) return true;
+  }
+  return false;
+}
+
+bool Snake::collidedWithSelf() {
+  Position *head = getHead();
+  // exclude the head
+  for (int i = 0; i < _body.size()-2; i++) {
+    if (_body[i].x == head->x && _body[i].y == head->y) return true;
+  }
+  return false;
+}
+
+std::deque<Position> Snake::getBody() const {
   return _body;
 }
 

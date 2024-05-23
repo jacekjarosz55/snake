@@ -4,6 +4,8 @@
 #include <allegro5/events.h>
 #include <allegro5/timer.h>
 
+#include "Snake.hpp"
+
 class Game {
 private:
   ALLEGRO_TIMER* _timer;
@@ -11,11 +13,16 @@ private:
   ALLEGRO_DISPLAY* _display;
   ALLEGRO_FONT* _font;
 
+  unsigned _frameCounter = 0;
+
+  Snake snake = Snake(10,10,20, SNAKE_DOWN);
+
 
   bool _needsRedraw = false;
   bool _exit = false;
   
   void draw();
+  void update();
   void onKeyDown(ALLEGRO_KEYBOARD_EVENT event);
 public:
   Game();

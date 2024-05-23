@@ -1,11 +1,14 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/display.h>
+#include <allegro5/drawing.h>
 #include <allegro5/events.h>
 #include <allegro5/keyboard.h>
 #include <allegro5/keycodes.h>
 #include <allegro5/timer.h>
 #include <iostream>
+#include <sstream>
+#include <unistd.h>
 
 #include "Game.hpp"
 #include "InitializationException.hpp"
@@ -58,6 +61,7 @@ Game::Game() {
         _exit = true;
         break;
       case ALLEGRO_EVENT_TIMER:
+        update();
         _needsRedraw = true;
         break;
     }
@@ -74,16 +78,43 @@ Game::Game() {
   }
 }
 
+void Game::update() {
+  _frameCounter++;
+  if (_frameCounter % 4 == 0) {
+    snake.step();
+    if (snake.collidedWithSelf()) {
+      _exit = true;
+    }
+  }
+}
+
 void Game::onKeyDown(ALLEGRO_KEYBOARD_EVENT event) {
   if (event.keycode == ALLEGRO_KEY_ESCAPE) {
     _exit = true;
   }
 
+  if (event.keycode == ALLEGRO_KEY_LEFT) {
+    snake.turn(SNAKE_LEFT);
+  }
+  if (event.keycode == ALLEGRO_KEY_RIGHT) {
+    snake.turn(SNAKE_RIGHT);
+  }
+  if (event.keycode == ALLEGRO_KEY_UP) {
+    snake.turn(SNAKE_UP);
+  }
+  if (event.keycode == ALLEGRO_KEY_DOWN) {
+    snake.turn(SNAKE_DOWN);
+  }
 }
 
 void Game::draw() {
   al_clear_to_color(al_map_rgb(255,0,255));
-  al_draw_text(_font, al_map_rgb(0,0,0), 20.0, 30.0, 0, "Hello, allegro!");
+
+  for (auto snakePart : snake.getBody()) {
+    al_draw_pixel(snakePart.x, snakePart.y, al_map_rgb(0,0,0));
+  }
+
+  //al_draw_text(_font, al_map_rgb(0,0,0), 20.0, 30.0, 0, stream.str().c_str());
   al_flip_display();
 }
 
