@@ -82,7 +82,7 @@ void Game::update() {
   _frameCounter++;
   if (_frameCounter % 4 == 0) {
     snake.step();
-    if (snake.collidedWithSelf()) {
+    if (snake.hasCollidedWithSelf()) {
       _exit = true;
     }
   }

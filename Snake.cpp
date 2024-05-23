@@ -89,7 +89,7 @@ bool Snake::collidesWith(Position pos) {
   return false;
 }
 
-bool Snake::collidedWithSelf() {
+bool Snake::hasCollidedWithSelf() {
   Position *head = getHead();
   // exclude the head
   for (int i = 0; i < _body.size()-2; i++) {
