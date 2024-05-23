@@ -33,7 +33,6 @@ private:
 
   Snake *snake;
 
-
   bool needsRedraw = false;
   bool exit = false;
 

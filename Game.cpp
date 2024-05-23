@@ -157,13 +157,33 @@ void Game::draw() {
 }
 
 void Game::drawSnake() {
+  const float PI = 3.14;
+  float halfsize = (float)TILE_SIZE/2;
+  float turn = 0;
+  switch(snake->getDirection()) {
+  case SNAKE_LEFT:
+    turn = 0 * PI;
+    break;
+  case SNAKE_RIGHT:
+    turn = 1 * PI;
+    break;
+  case SNAKE_UP:
+    turn = 0.5 * PI;
+    break;
+  case SNAKE_DOWN:
+    turn = 1.5 * PI;
+    break;
+  }
+
   auto snakeBody = snake->getBody();
   auto head = snakeBody.back();
   // draw head
-  al_draw_bitmap(
+  al_draw_rotated_bitmap(
     spritesheet->get(0),
-    head.x*TILE_SIZE,
-    head.y*TILE_SIZE,
+    halfsize, halfsize,
+    head.x*TILE_SIZE + halfsize,
+    head.y*TILE_SIZE + halfsize,
+    turn,
     0);
   // draw the rest
   for (int i = 0; i < snakeBody.size() - 1; i++) {

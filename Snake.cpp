@@ -112,4 +112,7 @@ void Snake::addLength(unsigned len) {
   _resize+=len;
 }
 
+SnakeDirection Snake::getDirection() const {
+  return _direction;
+}
 

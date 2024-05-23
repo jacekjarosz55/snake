@@ -40,4 +40,5 @@ public:
   void turn(SnakeDirection direction);
 
   std::deque<Position> getBody() const;
+  SnakeDirection getDirection() const;
 };
