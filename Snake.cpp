@@ -50,7 +50,7 @@ SnakeMove Snake::getMove(SnakeDirection direction) {
 void Snake::turn(SnakeDirection direction) {
   if (
     ( _moves.size() == 0 && (direction == _direction || direction == oppositeDirection(_direction))
-    || (_moves.size() > 0 && _moves.front() == direction))
+    || (_moves.size() > 0 && (_moves.front() == direction || _moves.front() == oppositeDirection(direction))))
   ) {
     return;
   }
