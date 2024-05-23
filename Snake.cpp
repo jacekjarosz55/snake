@@ -53,7 +53,7 @@ Position *Snake::getHead() {
 void Snake::turn(SnakeDirection direction) {
   if (
     ( _moves.size() == 0 && (direction == _direction || direction == oppositeDirection(_direction))
-    || (_moves.size() > 0 && _moves.back() == direction))
+    || (_moves.size() > 0 && _moves.front() == direction))
   ) {
     return;
   }

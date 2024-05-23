@@ -1,6 +1,7 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/bitmap.h>
 #include <unistd.h>
 
 #include "Game.hpp"
@@ -19,8 +20,6 @@ Game::Game() {
     throw InitializationException("image addon");
   }
 
-
-
   _timer = al_create_timer(1.0 / 30.0); // 30fps
   if (!_timer) {
     throw InitializationException("timer");
@@ -30,10 +29,15 @@ Game::Game() {
   if (!_queue) {
     throw InitializationException("event queue");
   }
-  _display = al_create_display(800,600);
+  
+  
+  _gameBuffer = al_create_bitmap(BUFFER_W, BUFFER_H);
+
+  _display = al_create_display(BUFFER_W*WINDOW_SCALE, BUFFER_H*WINDOW_SCALE);
   if (!_display) {
     throw InitializationException("display");
   }
+
   _font = al_create_builtin_font();
   if (!_font) {
     throw InitializationException("font");
@@ -81,6 +85,7 @@ Game::Game() {
 
 void Game::update() {
   _frameCounter++;
+  // TODO: replace '4' with snake speed
   if (_frameCounter % 4 == 0) {
     snake.step();
     if (snake.hasCollidedWithSelf()) {
@@ -89,6 +94,7 @@ void Game::update() {
   }
 }
 
+// kinda weird but this is the only input we need so
 void Game::onKeyDown(ALLEGRO_KEYBOARD_EVENT event) {
   if (event.keycode == ALLEGRO_KEY_ESCAPE) {
     _exit = true;
@@ -109,18 +115,23 @@ void Game::onKeyDown(ALLEGRO_KEYBOARD_EVENT event) {
 }
 
 void Game::draw() {
+  // draw on the game buffer
+  al_set_target_bitmap(_gameBuffer); 
   al_clear_to_color(al_map_rgb(255,0,255));
 
   for (auto snakePart : snake.getBody()) {
     al_draw_pixel(snakePart.x, snakePart.y, al_map_rgb(0,0,0));
   }
 
-  //al_draw_text(_font, al_map_rgb(0,0,0), 20.0, 30.0, 0, stream.str().c_str());
+  // draw the buffer onto the window
+  al_set_target_backbuffer(_display); 
+  al_draw_scaled_bitmap(_gameBuffer, 0, 0, BUFFER_W, BUFFER_H, 0, 0, BUFFER_W * WINDOW_SCALE, BUFFER_H * WINDOW_SCALE, 0);
   al_flip_display();
 }
 
 Game::~Game() {
   al_destroy_font(_font);
+  al_destroy_bitmap(_gameBuffer);
   al_destroy_display(_display);
   al_destroy_timer(_timer);
   al_destroy_event_queue(_queue);
