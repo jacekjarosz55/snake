@@ -1,13 +1,6 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
-#include <allegro5/display.h>
-#include <allegro5/drawing.h>
-#include <allegro5/events.h>
-#include <allegro5/keyboard.h>
-#include <allegro5/keycodes.h>
-#include <allegro5/timer.h>
-#include <iostream>
-#include <sstream>
+#include <allegro5/allegro_image.h>
 #include <unistd.h>
 
 #include "Game.hpp"
@@ -20,6 +13,14 @@ Game::Game() {
   if (!al_install_keyboard()) {
     throw InitializationException("keyboard");
   }
+
+  if (!al_init_image_addon())
+  {
+    throw InitializationException("image addon");
+  }
+
+
+
   _timer = al_create_timer(1.0 / 30.0); // 30fps
   if (!_timer) {
     throw InitializationException("timer");
