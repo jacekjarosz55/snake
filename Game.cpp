@@ -2,6 +2,8 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/bitmap.h>
+#include <allegro5/bitmap_draw.h>
+#include <allegro5/bitmap_io.h>
 #include <unistd.h>
 
 #include "Game.hpp"
@@ -29,7 +31,7 @@ Game::Game() {
   if (!_queue) {
     throw InitializationException("event queue");
   }
-  
+
   
   _gameBuffer = al_create_bitmap(BUFFER_W, BUFFER_H);
 
@@ -47,6 +49,7 @@ Game::Game() {
   al_register_event_source(_queue, al_get_keyboard_event_source());
   al_register_event_source(_queue, al_get_display_event_source(_display));
   al_register_event_source(_queue, al_get_timer_event_source(_timer));
+
 
 
   // game loop

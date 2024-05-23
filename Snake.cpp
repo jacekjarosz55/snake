@@ -46,9 +46,6 @@ SnakeMove Snake::getMove(SnakeDirection direction) {
   return move;
 }
 
-Position *Snake::getHead() {
-  return &_body.back();
-}
 
 void Snake::turn(SnakeDirection direction) {
   if (
@@ -61,7 +58,7 @@ void Snake::turn(SnakeDirection direction) {
 }
 
 void Snake::step() {
-  Position *head = getHead();
+  Position head = _body.back();
   Position newHead;
 
   if (_moves.size() > 0) {
@@ -90,10 +87,10 @@ bool Snake::collidesWith(Position pos) {
 }
 
 bool Snake::hasCollidedWithSelf() {
-  Position *head = getHead();
+  Position head = _body.back();
   // exclude the head
-  for (int i = 0; i < _body.size()-2; i++) {
-    if (_body[i].x == head->x && _body[i].y == head->y) return true;
+  for (int i = 0; i < _body.size()-1; i++) {
+    if (_body[i].x == head.x && _body[i].y == head.y) return true;
   }
   return false;
 }

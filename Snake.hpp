@@ -25,7 +25,6 @@ private:
   std::deque<Position> _body;
   std::queue<SnakeDirection> _moves;
   SnakeDirection _direction;
-  Position *getHead();
 public: 
   Snake(int x, int y, int resize, SnakeDirection direction);
   static SnakeMove getMove(SnakeDirection direction);
