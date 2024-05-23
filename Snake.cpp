@@ -68,8 +68,8 @@ void Snake::step() {
 
   SnakeMove move = getMove(_direction);
 
-  newHead.x = head->x + move.dx;
-  newHead.y = head->y + move.dy;
+  newHead.x = head.x + move.dx;
+  newHead.y = head.y + move.dy;
 
   _body.push_back(newHead);
   if (_resize > 0) {

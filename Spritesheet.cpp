@@ -5,8 +5,8 @@
 #include <allegro5/bitmap_io.h>
 #include <string>
 
-Spritesheet::Spritesheet(const std::string& filename) {
-  _source = al_load_bitmap(filename.c_str());
+Spritesheet::Spritesheet(const char *filename) {
+  _source = al_load_bitmap(filename);
   if (!_source) {
     throw InitializationException("spritesheet image");
   }
@@ -32,6 +32,6 @@ Spritesheet::~Spritesheet() {
 }
 
 
-ALLEGRO_BITMAP *Spritesheet::sprite(unsigned idx) {
+ALLEGRO_BITMAP *Spritesheet::get(unsigned idx) {
   return _sprites.at(idx);
 }

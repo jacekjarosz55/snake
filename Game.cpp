@@ -31,7 +31,6 @@ Game::Game() {
   if (!_queue) {
     throw InitializationException("event queue");
   }
-
   
   _gameBuffer = al_create_bitmap(BUFFER_W, BUFFER_H);
 
@@ -45,12 +44,12 @@ Game::Game() {
     throw InitializationException("font");
   }
 
+  _spritesheet = new Spritesheet("spritesheet.png");
+
   // listen to keyboard events
   al_register_event_source(_queue, al_get_keyboard_event_source());
   al_register_event_source(_queue, al_get_display_event_source(_display));
   al_register_event_source(_queue, al_get_timer_event_source(_timer));
-
-
 
   // game loop
   // could be split into a separate method
@@ -126,6 +125,8 @@ void Game::draw() {
     al_draw_pixel(snakePart.x, snakePart.y, al_map_rgb(0,255,0));
   }
 
+  al_draw_bitmap(_spritesheet->get(_frameCounter % _spritesheet->size()), 16,16, 0);
+
   // draw the buffer onto the window
   al_set_target_backbuffer(_display); 
   al_draw_scaled_bitmap(_gameBuffer, 0, 0, BUFFER_W, BUFFER_H, 0, 0, BUFFER_W * WINDOW_SCALE, BUFFER_H * WINDOW_SCALE, 0);
@@ -133,16 +134,10 @@ void Game::draw() {
 }
 
 Game::~Game() {
+  delete _spritesheet;
   al_destroy_font(_font);
   al_destroy_bitmap(_gameBuffer);
   al_destroy_display(_display);
   al_destroy_timer(_timer);
   al_destroy_event_queue(_queue);
 }
-
-
-
-
-
-
-

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <allegro5/bitmap.h>
-#include <string>
 #include <vector>
 
 class Spritesheet {
@@ -13,7 +12,8 @@ private:
   unsigned _spriteCount;
   std::vector<ALLEGRO_BITMAP *> _sprites;
 public:
-  Spritesheet(const std::string& filename);
+  Spritesheet(const char *filename);
   ~Spritesheet();
-  ALLEGRO_BITMAP *sprite(unsigned idx);
+  ALLEGRO_BITMAP *get(unsigned idx);
+  unsigned size() const { return _sprites.size(); };
 };

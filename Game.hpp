@@ -7,6 +7,7 @@
 #include <allegro5/allegro_image.h>
 
 #include "Snake.hpp"
+#include "Spritesheet.hpp"
 
 class Game {
 private:
@@ -17,6 +18,8 @@ private:
 
   ALLEGRO_BITMAP *_gameBuffer;
 
+  Spritesheet *_spritesheet;
+
   unsigned _frameCounter = 0;
 
   Snake snake = Snake(10,10,20, SNAKE_DOWN);
@@ -24,9 +27,6 @@ private:
   const unsigned BUFFER_W = 400;
   const unsigned BUFFER_H = 300;
   const unsigned WINDOW_SCALE = 2;
-
-  const unsigned SPRITESHEET_RES = 32;
-  ALLEGRO_BITMAP *_spritesheet;
 
   bool _needsRedraw = false;
   bool _exit = false;
