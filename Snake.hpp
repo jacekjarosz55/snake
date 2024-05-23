@@ -32,7 +32,8 @@ public:
 
   void step(); 
 
-  bool collidesWith(Position pos);
+  bool isInside(Position pos);
+  bool hasCollidedWith(Position pos);
   bool hasCollidedWithSelf();
   void addLength(unsigned len);
 

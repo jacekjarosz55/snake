@@ -103,7 +103,7 @@ void Game::update() {
     }
 
     for (auto fruitIt = fruits.begin(); fruitIt != fruits.end();) {
-      if(snake->collidesWith(*fruitIt)) {
+      if(snake->hasCollidedWith(*fruitIt)) {
         fruits.erase(fruitIt);
         snake->addLength(1);
         spawnFruit();
@@ -178,13 +178,12 @@ void Game::drawFruits() {
 }
 
 
-
-
-
 void Game::spawnFruit() {
   Position fruit;
-  fruit.x = rand()%TILES_X;
-  fruit.y = rand()%TILES_Y;
+  do {
+    fruit.x = rand()%TILES_X;
+    fruit.y = rand()%TILES_Y;
+  } while (snake->isInside(fruit));
   fruits.push_back(fruit);
 }
 

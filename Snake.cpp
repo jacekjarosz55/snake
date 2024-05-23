@@ -79,9 +79,16 @@ void Snake::step() {
   }
 }
 
-bool Snake::collidesWith(Position pos) {
+bool Snake::hasCollidedWith(Position pos) {
   auto head = _body.back();
   return (head.x == pos.x && head.y == pos.y);
+}
+
+bool Snake::isInside(Position pos) {
+  for (auto part : _body) {
+    if (part.x == pos.x && part.y == pos.y) return true;
+  }
+  return false;
 }
 
 bool Snake::hasCollidedWithSelf() {
