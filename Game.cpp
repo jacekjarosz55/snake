@@ -117,10 +117,10 @@ void Game::onKeyDown(ALLEGRO_KEYBOARD_EVENT event) {
 void Game::draw() {
   // draw on the game buffer
   al_set_target_bitmap(_gameBuffer); 
-  al_clear_to_color(al_map_rgb(255,0,255));
+  al_clear_to_color(al_map_rgb(0,0,0));
 
   for (auto snakePart : snake.getBody()) {
-    al_draw_pixel(snakePart.x, snakePart.y, al_map_rgb(0,0,0));
+    al_draw_pixel(snakePart.x, snakePart.y, al_map_rgb(0,255,0));
   }
 
   // draw the buffer onto the window
