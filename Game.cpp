@@ -9,40 +9,26 @@
 
 #include "Game.hpp"
 #include "InitializationException.hpp"
+#include "Util.hpp"
 
 Game::Game() {
-  if (!al_init()) {
-    throw InitializationException("allegro");
-  }
-  if (!al_install_keyboard()) {
-    throw InitializationException("keyboard");
-  }
+  mustInit(al_init(), "allegro");
+  mustInit(al_install_keyboard(), "keyboard module");
+  mustInit(al_init_image_addon(), "image addon");
 
-  if (!al_init_image_addon())
-  {
-    throw InitializationException("image addon");
-  }
-
-  timer = al_create_timer(1.0 / 30.0); // 30fps
-  if (!timer) {
-    throw InitializationException("timer");
-  }
+  timer = al_create_timer(1.0 / 30.0); 
+  mustInit(timer, "timer");
 
   eventQueue = al_create_event_queue();
-  if (!eventQueue) {
-    throw InitializationException("event queue");
-  }
+  mustInit(eventQueue, "event queue");
   
   gameBuffer = al_create_bitmap(BUFFER_W, BUFFER_H);
+
   display = al_create_display(BUFFER_W*WINDOW_SCALE, BUFFER_H*WINDOW_SCALE);
-  if (!display) {
-    throw InitializationException("display");
-  }
+  mustInit(display, "display");
 
   font = al_create_builtin_font();
-  if (!font) {
-    throw InitializationException("font");
-  }
+  mustInit(font, "font");
 
   spritesheet = new Spritesheet("spritesheet.png", 32);
 
